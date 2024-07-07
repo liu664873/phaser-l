@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="phaser3-tutorial-src">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/assets/phaser3-tutorial-src.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

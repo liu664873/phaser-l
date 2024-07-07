@@ -1,19 +1,17 @@
-import Phaser from "Phaser"
-import { LoadScene } from "./scene/load";
+import Phaser from "phaser"
+import GameScene from "./scene/GameScene"
 
-
-const config = {
+let config = {
     type: Phaser.AUTO,
     width: 800,
     height: 600,
-    physics: {
-        default: 'arcade',
-        arcade: {
-            gravity: { y: 200 }
+    physics:{
+        default:"arcade",
+        arcade:{
+            gravity: {y: 300}
         }
     },
-    parent:'game',
-    scene:[LoadScene],
-};
+    scene:[GameScene]
+}
 
-const game = new Phaser.Game(config);
+var game = new Phaser.Game(config)

@@ -16,7 +16,7 @@ module.exports = {
     hot:true,
     open:true,
     static: {
-      directory: path.join(__dirname, 'assets'),
+      directory: path.join(__dirname, '/'),
       watch: false,
     },
   }
