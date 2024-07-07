@@ -1,4 +1,6 @@
 import Phaser from "phaser"
+import { ScoreText } from "../ui/Score"
+import BombSpawner from "../ui/Bomb"
 
 const GROUND_KEY = "ground"
 const DUDE_KEY = "dude"
@@ -11,6 +13,11 @@ export default class GameScene extends Phaser.Scene {
         super("gameScene")
         this.player = undefined
         this.cursor = undefined
+        this.scoreText = undefined
+        this.BombSpawner = undefined
+        this.stars = undefined
+
+        this.gameOver = false
     }
     preload(){
         this.load.image(BOMB_KEY, "assets/bomb.png")
@@ -22,13 +29,38 @@ export default class GameScene extends Phaser.Scene {
     create(){
         this.add.image(400,300,"sky")
 
+        this.bombSpawner = new BombSpawner(this, BOMB_KEY)
+
+		const bombsGroup = this.bombSpawner.group
         const platforms = this.createPlatforms()
         this.player = this.createPlayer()
-
-        this.physics.add.collider(this.player, platforms)
-
+        this.stars = this.createStars()
         this.cursor = this.input.keyboard.createCursorKeys()
+        this.scoreText = this.createScoreText(16, 16, 0)
 
+
+        this.physics.add.collider(bombsGroup, platforms)
+        this.physics.add.collider(this.player, platforms)
+        this.physics.add.collider(this.stars, platforms)
+        this.physics.add.collider(this.player, bombsGroup, this.over, null, this)
+        this.physics.add.overlap(this.player, this.stars, this.collectStar, null, this)
+
+    }
+    collectStar(player, star){
+        star.disableBody(true,true)
+        this.scoreText.add(10)
+        if(this.stars.countActive(true) === 0){
+            this.stars.children.iterate((child)=>{
+                child.enableBody(true,child.x, 0,true,true)
+            })
+        }
+        this.bombSpawner.spawn(player.x)
+    }
+    over(player, bomb){
+        this.physics.pause()
+        player.setTint("0xff0000")
+        player.anims.play("turn")
+        this.gameOver = true
     }
     createPlatforms(){
         const platforms = this.physics.add.staticGroup()
@@ -70,6 +102,10 @@ export default class GameScene extends Phaser.Scene {
         return player
     }
     update(){
+        if(this.gameOver){
+            return
+        }
+
         if(this.cursor.left.isDown){
             this.player.setVelocityX(-160)
             this.player.anims.play("left", true)
@@ -89,7 +125,19 @@ export default class GameScene extends Phaser.Scene {
 
     createStars(){
         const stars = this.physics.add.group({
-    
+            key: "star",
+            repeat:11,
+            setXY:{x:12, y:0, stepX:70}
         })
+        stars.children.iterate(function(children){
+            children.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8))
+        })
+
+        return stars
+    }
+    createScoreText(x, y, score){
+        const scoreText = new ScoreText(this, x, y, score, {fontSize:32, fill:"#ffffff"})
+        this.add.existing(scoreText)
+        return scoreText
     }
 }
