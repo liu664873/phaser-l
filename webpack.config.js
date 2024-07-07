@@ -11,5 +11,13 @@ module.exports = {
   plugins:[new htmlWebpackPlugin({
     title:"phaser3-start",
     template:"index.html"
-  })]
+  })],
+  devServer: {
+    hot:true,
+    open:true,
+    static: {
+      directory: path.join(__dirname, 'assets'),
+      watch: false,
+    },
+  }
 };
